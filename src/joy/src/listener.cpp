@@ -8,7 +8,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "joy/joy.hpp"
 #include <sensor_msgs/msg/joy.hpp>
-
 class Listener : public rclcpp::Node
 {
 public:
@@ -16,6 +15,10 @@ public:
   : Node("listener")
   {
     fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY);
+    if (fd < 0)
+    {
+      RCLCPP_ERROR(this->get_logger(), "Failed to open /dev/ttyACM0");
+    }
     struct termios tty;
     tcgetattr(fd, &tty);
     cfmakeraw(&tty);
@@ -28,17 +31,31 @@ public:
       };
     auto timer_callback =
       [this]() -> void{
+        if (!last_msg) {
+          RCLCPP_WARN(this->get_logger(), "No Joy message received yet.");
+          return;
+        }
+        // if (last_msg->axes.size() < 8) {
+        //   RCLCPP_WARN(this->get_logger(), "axes size too small: %zu", last_msg->axes.size());
+        //   return;
+        // }
+        // if (last_msg->buttons.size() < 13) {
+        //   RCLCPP_WARN(this->get_logger(), "buttons size too small: %zu", last_msg->buttons.size());
+        //   return;
+        // }
+
         RCLCPP_INFO(this->get_logger(), "\naxes:\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\nbuttons:\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d", last_msg->axes[0],last_msg->axes[1],last_msg->axes[2],last_msg->axes[3],last_msg->axes[4],last_msg->axes[5],last_msg->axes[6],last_msg->axes[7],last_msg->buttons[0],last_msg->buttons[1],last_msg->buttons[2],last_msg->buttons[3],last_msg->buttons[4],last_msg->buttons[5],last_msg->buttons[6],last_msg->buttons[7],last_msg->buttons[8],last_msg->buttons[9],last_msg->buttons[10],last_msg->buttons[11],last_msg->buttons[12]);
-        if (fd == 3) {
+        if (fd >= 0) {
+          send_msg.clear();
           send_msg += "n";
           send_msg += ":";
-          send_msg += last_msg->axes[0];
+          send_msg += std::to_string(last_msg->axes[0]);
           send_msg += ":";
-          send_msg += last_msg->axes[1];
+          send_msg += std::to_string(last_msg->axes[1]);
           send_msg += ":";
-          send_msg += last_msg->axes[3];
+          send_msg += std::to_string(last_msg->axes[3]);
           send_msg += ":";
-          send_msg += last_msg->axes[4]; 
+          send_msg += std::to_string(last_msg->axes[4]); 
           send_msg += "|";
           send_msg += (last_msg->buttons[4] ? "L1:p" : "L1:no_p");
           send_msg += "|";
