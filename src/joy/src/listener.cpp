@@ -35,6 +35,15 @@ public:
           RCLCPP_WARN(this->get_logger(), "No Joy message received yet.");
           return;
         }
+
+        bool hasNum = 0;
+        for(int i = 0; i < 8; i++){
+          hasNum |= static_cast<bool>(last_msg->axes[i]);
+        }
+        for(int i = 0; i < 13; i++){
+          hasNum |= static_cast<bool>(last_msg->buttons[i]);
+        }
+        if (hasNum == 0) return;
         // if (last_msg->axes.size() < 8) {
         //   RCLCPP_WARN(this->get_logger(), "axes size too small: %zu", last_msg->axes.size());
         //   return;
