@@ -63,6 +63,7 @@ private:
   bool handleJoyHatMotion(const SDL_Event & e);
   void handleJoyDeviceAdded(const SDL_Event & e);
   void handleJoyDeviceRemoved(const SDL_Event & e);
+  void handleKey
   float convertRawAxisValueToROS(int16_t val);
   void feedbackCb(const std::shared_ptr<sensor_msgs::msg::JoyFeedback> msg);
 
@@ -90,6 +91,6 @@ private:
   sensor_msgs::msg::Joy joy_msg_;
 };
 
-}  // namespace joy
+}  // namespace Joy
 
-#endif  // JOY__JOY_HPP_
+#endif  // JOY__Joy_HPP_

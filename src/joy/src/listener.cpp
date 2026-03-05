@@ -100,14 +100,13 @@ public:
           send_msg += "|";
           send_msg += (last_msg->buttons[3] ? "sq:p" : "sq:no_p");
           send_msg += "|";
-          // ofs.flush();
           write(fd, send_msg.c_str(), strlen(send_msg.c_str()));
         }else{
           RCLCPP_ERROR(this->get_logger(), "Can't open file.");
         }
       };
     
-    sub_ = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10, joy_callback);
+    sub_ = this->create_subscription<sensor_msgs::msg::Joy>("Zjoy", 10, joy_callback);
 
     using namespace std::chrono_literals;
     timer_ = this->create_wall_timer(50ms, timer_callback);

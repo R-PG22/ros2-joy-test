@@ -72,7 +72,7 @@ Joy::Joy(const rclcpp::NodeOptions & options)
   // do get value between -1.0 and 1.0 (and not -deadzone to +deadzone).
   scale_ = static_cast<float>(-1.0 / (1.0 - scaled_deadzone_) / 32767.0);
 
-  autorepeat_rate_ = this->declare_parameter("autorepeat_rate", 20.0);
+  autorepeat_rate_ = this->declare_parameter("autorepeat_rate", 50.0);
   if (autorepeat_rate_ < 0.0) {
     throw std::runtime_error("Autorepeat rate must be >= 0.0");
   } else if (autorepeat_rate_ > 1000.0) {
@@ -477,6 +477,14 @@ void Joy::eventThread()
       joy_msg_.header.frame_id = "joy";
       joy_msg_.header.stamp = this->now();
 
+      bool hasNum = 0;
+      for(int i = 0; i < 8; i++){
+        hasNum |= static_cast<bool>(joy_msg_.axes[i]);
+      }
+      for(int i = 0; i < 13; i++){
+        hasNum |= static_cast<bool>(joy_msg_.buttons[i]);
+      }
+      if (hasNum == 0) continue;
       pub_->publish(joy_msg_);
     }
 
