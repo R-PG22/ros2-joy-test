@@ -63,7 +63,6 @@ private:
   bool handleJoyHatMotion(const SDL_Event & e);
   void handleJoyDeviceAdded(const SDL_Event & e);
   void handleJoyDeviceRemoved(const SDL_Event & e);
-  void handleKey
   float convertRawAxisValueToROS(int16_t val);
   void feedbackCb(const std::shared_ptr<sensor_msgs::msg::JoyFeedback> msg);
 

@@ -16,6 +16,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(sdl2_vendor REQUIRED)
 find_package(sdl2_custom REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 add_library(joy SHARED src/joy.cpp)
 target_include_directories(joy PUBLIC
@@ -49,7 +50,7 @@ ament_export_dependencies(
   "sdl2_custom")
 
 add_executable(listener src/listener.cpp)
-ament_target_dependencies(listener rclcpp sensor_msgs)
+ament_target_dependencies(listener rclcpp sensor_msgs std_msgs)
 target_link_libraries(listener joy)
 install(TARGETS
   listener

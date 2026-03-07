@@ -8,6 +8,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "joy/joy.hpp"
 #include <sensor_msgs/msg/joy.hpp>
+#include "std_msgs/msg/string.hpp"
 class Listener : public rclcpp::Node
 {
 public:
@@ -27,8 +28,12 @@ public:
 
     auto joy_callback =
       [this](const std::shared_ptr<sensor_msgs::msg::Joy> msg) -> void{
-      last_msg = msg;
+        last_msg = msg;
       };
+    // auto keyboard_callback =
+    //   [this](std_msgs::msg::String::SharedPtr k_msg) -> void{
+    //     key_msg = k_msg;
+    //   };
     auto timer_callback =
       [this]() -> void{
         if (!last_msg) {
@@ -53,7 +58,10 @@ public:
         //   return;
         // }
 
-        RCLCPP_INFO(this->get_logger(), "\naxes:\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\nbuttons:\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d", last_msg->axes[0],last_msg->axes[1],last_msg->axes[2],last_msg->axes[3],last_msg->axes[4],last_msg->axes[5],last_msg->axes[6],last_msg->axes[7],last_msg->buttons[0],last_msg->buttons[1],last_msg->buttons[2],last_msg->buttons[3],last_msg->buttons[4],last_msg->buttons[5],last_msg->buttons[6],last_msg->buttons[7],last_msg->buttons[8],last_msg->buttons[9],last_msg->buttons[10],last_msg->buttons[11],last_msg->buttons[12]);
+        // std::string key_data = key_msg ? key_msg->data.c_str() : "";
+        // RCLCPP_INFO(this->get_logger(), "%s\n", key_data);
+        // if (key_msg->data == 'a') abort();
+        RCLCPP_INFO(this->get_logger(), "\naxes:\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\nbuttons:\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", last_msg->axes[0],last_msg->axes[1],last_msg->axes[2],last_msg->axes[3],last_msg->axes[4],last_msg->axes[5],last_msg->axes[6],last_msg->axes[7],last_msg->buttons[0],last_msg->buttons[1],last_msg->buttons[2],last_msg->buttons[3],last_msg->buttons[4],last_msg->buttons[5],last_msg->buttons[6],last_msg->buttons[7],last_msg->buttons[8],last_msg->buttons[9],last_msg->buttons[10],last_msg->buttons[11],last_msg->buttons[12]);
         if (fd >= 0) {
           send_msg.clear();
           send_msg += "n";
@@ -62,7 +70,7 @@ public:
           send_msg += ":";
           send_msg += std::to_string(last_msg->axes[1]);
           send_msg += ":";
-          send_msg += std::to_string(last_msg->axes[3]);
+          send_msg += std::to_string(last_msg->axes[3]*-1);
           send_msg += ":";
           send_msg += std::to_string(last_msg->axes[4]); 
           send_msg += "|";
@@ -100,13 +108,17 @@ public:
           send_msg += "|";
           send_msg += (last_msg->buttons[3] ? "sq:p" : "sq:no_p");
           send_msg += "|";
+          // send_msg += key_data;
+          // send_msg += "|";
           write(fd, send_msg.c_str(), strlen(send_msg.c_str()));
         }else{
           RCLCPP_ERROR(this->get_logger(), "Can't open file.");
         }
       };
     
-    sub_ = this->create_subscription<sensor_msgs::msg::Joy>("Zjoy", 10, joy_callback);
+    sub_ = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10, joy_callback);
+    // keyboard_sub_ =
+      // this->create_subscription<std_msgs::msg::String>("keyboard_topic", 10, keyboard_callback);
 
     using namespace std::chrono_literals;
     timer_ = this->create_wall_timer(50ms, timer_callback);
@@ -115,8 +127,10 @@ public:
 
 private:
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr keyboard_sub_;
   rclcpp::TimerBase::SharedPtr timer_;
   sensor_msgs::msg::Joy::SharedPtr last_msg;
+  std_msgs::msg::String::SharedPtr key_msg;
   int fd;
   std::string send_msg = "";
 };
