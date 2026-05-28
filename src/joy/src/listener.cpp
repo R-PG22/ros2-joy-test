@@ -64,8 +64,6 @@ public:
         RCLCPP_INFO(this->get_logger(), "\naxes:\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\n%.2f\nbuttons:\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", last_msg->axes[0],last_msg->axes[1],last_msg->axes[2],last_msg->axes[3],last_msg->axes[4],last_msg->axes[5],last_msg->axes[6],last_msg->axes[7],last_msg->buttons[0],last_msg->buttons[1],last_msg->buttons[2],last_msg->buttons[3],last_msg->buttons[4],last_msg->buttons[5],last_msg->buttons[6],last_msg->buttons[7],last_msg->buttons[8],last_msg->buttons[9],last_msg->buttons[10],last_msg->buttons[11],last_msg->buttons[12]);
         if (fd >= 0) {
           send_msg.clear();
-          send_msg += "n";
-          send_msg += ":";
           send_msg += std::to_string(last_msg->axes[0]);
           send_msg += ":";
           send_msg += std::to_string(last_msg->axes[1]);
@@ -73,41 +71,26 @@ public:
           send_msg += std::to_string(last_msg->axes[3]*-1);
           send_msg += ":";
           send_msg += std::to_string(last_msg->axes[4]); 
+          send_msg += ":";
+          send_msg += std::to_string(last_msg->buttons[4]); // L1
+          send_msg += std::to_string(last_msg->buttons[6]); // L2
+          send_msg += std::to_string(last_msg->buttons[11]); // L3
+          send_msg += std::to_string(last_msg->buttons[5]); // R1
+          send_msg += std::to_string(last_msg->buttons[7]); // R2
+          send_msg += std::to_string(last_msg->buttons[12]); // R3
+          send_msg += std::to_string(last_msg->buttons[10]); // PS
+          send_msg += std::to_string(last_msg->buttons[8]); // SH
+          send_msg += std::to_string(last_msg->buttons[9]); // OP
+          send_msg += std::to_string(last_msg->axes[7]==1.0f ? 1 : 0); // up
+          send_msg += std::to_string(last_msg->axes[7]==-1.0f ? 1 : 0); // down
+          send_msg += std::to_string(last_msg->axes[6]==-1.0f ? 1 : 0); // right
+          send_msg += std::to_string(last_msg->axes[6]==1.0f ? 1 : 0); // left
+          send_msg += std::to_string(last_msg->buttons[1]); // circle
+          send_msg += std::to_string(last_msg->buttons[0]); // cross
+          send_msg += std::to_string(last_msg->buttons[2]); // triangle
+          send_msg += std::to_string(last_msg->buttons[3]); // square
           send_msg += "|";
-          send_msg += (last_msg->buttons[4] ? "L1:p" : "L1:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[6] ? "L2:p" : "L2:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[11] ? "L3:p" : "L3:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[5] ? "R1:p" : "R1:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[7] ? "R2:p" : "R2:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[12] ? "R3:p" : "R3:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[10] ? "PS:p" : "PS:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[8] ? "SH:p" : "SH:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[9] ? "OP:p" : "OP:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->axes[7]==1.0f ? "u:p" : "u:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->axes[7]==-1.0f ? "d:p" : "d:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->axes[6]==1.0f ? "l:p" : "l:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->axes[6]==-1.0f ? "r:p" : "r:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[1] ? "ci:p" : "ci:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[0] ? "cr:p" : "cr:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[2] ? "tri:p" : "tri:no_p");
-          send_msg += "|";
-          send_msg += (last_msg->buttons[3] ? "sq:p" : "sq:no_p");
-          send_msg += "|";
+          send_msg += '\n';
           // send_msg += key_data;
           // send_msg += "|";
           write(fd, send_msg.c_str(), strlen(send_msg.c_str()));
