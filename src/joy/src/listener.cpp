@@ -41,22 +41,22 @@ public:
           return;
         }
 
-        bool hasNum = 0;
-        for(int i = 0; i < 8; i++){
-          hasNum |= static_cast<bool>(last_msg->axes[i]);
-        }
-        for(int i = 0; i < 13; i++){
-          hasNum |= static_cast<bool>(last_msg->buttons[i]);
-        }
-        if (hasNum == 0) return;
-        // if (last_msg->axes.size() < 8) {
-        //   RCLCPP_WARN(this->get_logger(), "axes size too small: %zu", last_msg->axes.size());
-        //   return;
+        // bool hasNum = 0;
+        // for(int i = 0; i < 8; i++){
+        //   hasNum |= static_cast<bool>(last_msg->axes[i]);
         // }
-        // if (last_msg->buttons.size() < 13) {
-        //   RCLCPP_WARN(this->get_logger(), "buttons size too small: %zu", last_msg->buttons.size());
-        //   return;
+        // for(int i = 0; i < 13; i++){
+        //   hasNum |= static_cast<bool>(last_msg->buttons[i]);
         // }
+        // if (hasNum == 0) return;
+        if (last_msg->axes.size() < 8) {
+          RCLCPP_WARN(this->get_logger(), "axes size too small: %zu", last_msg->axes.size());
+          return;
+        }
+        if (last_msg->buttons.size() < 13) {
+          RCLCPP_WARN(this->get_logger(), "buttons size too small: %zu", last_msg->buttons.size());
+          return;
+        }
 
         // std::string key_data = key_msg ? key_msg->data.c_str() : "";
         // RCLCPP_INFO(this->get_logger(), "%s\n", key_data);
